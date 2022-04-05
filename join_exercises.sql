@@ -1,4 +1,4 @@
-Question 1
+Question 2
  Using the example in the Associative Table Joins section as a guide, write a query
  that shows each department along with the name of the current manager for that department.
  -- DOUBLE CHECKED CORRECT 
@@ -10,7 +10,7 @@ Join departments on departments.dept_no=dept_manager.dept_no
 Where dept_manager.to_date like '%9999%'
 order by dept_name;
 
-Question 2 
+Question 3 
 Find the name of all departments currently managed by women.
 --Answer: DOUBLE CHECKED CORRECT
 use employees;
@@ -22,19 +22,21 @@ Where (dept_manager.to_date like '%9999%') and (gender like '%f%')
 Order by departments.dept_name;
 
 
-Question 3 
+Question FOUR
 Find the current titles of employees currently working in the Customer Service department.
 tables needed: titles, dept_emp, employee, departments
----ERROR THIS IS INCORRECT
+
+---THIS IS CORRECT 
 use employees;
 
-SELECT COUNT(titles.title), employees.First_name, employees.last_name, departments.dept_name, titles.to_date  
+SELECT titles.title as 'Title', COUNT(titles.emp_no) as 'count'   
 from titles join employees on titles.emp_no=employees.emp_no 
 Join dept_emp on dept_emp.emp_no=employees.emp_no Join departments on departments.dept_no=dept_emp.dept_no
-Where (titles.to_date like '%9999%') and (departments.dept_name like '%customer%')
-Group by titles.title;
+Where (titles.to_date like '%9999%') and (dept_emp.to_date like '%9999%') and  (departments.dept_name like '%customer%')
+GROUP BY titles.title;
 
-Question 4 
+
+Question FIVE
 Find the current salary of all current managers.
 --Answer: DOUBLE CHECKED THIS IS CORRECT
 use employees; 
@@ -46,25 +48,25 @@ Where (salaries.to_date like '%9999%') and (titles.title like '%manager%') and (
 
 Question 6
 Find the number of current employees in each department
---Answer ERROR NEEDS REVIEW
-use employees; 
-#Find the number of current employees in each department 
+--Answer CORRECT CORRECT 
 use employees;
-SELECT COUNT(dept_emp.emp_no), departments.dept_name, dept_emp.to_date
+SELECT departments.dept_no as 'dept_no', departments.dept_name as 'dept_name', COUNT(dept_emp.emp_no) as 'num_employees' 
 From departments join dept_emp on departments.dept_no=dept_emp.dept_no 
 Where dept_emp.to_date like '%9999%'
-Group by departments.dept_name;
+Group by departments.dept_name
+order by departments.dept_no;
 
-Question 6 
+Question 7
 Which department has the highest average salary?
---INCORRECT ANSWER 
+need department average salary 
+--CORRECT CORRECT 
 use employees; 
-SELECT dept_emp.emp_no, departments.dept_name, salaries.salary
+SELECT departments.dept_name, AVG(salaries.salary) as 'avg_salary'
 From departments join dept_emp on departments.dept_no=dept_emp.dept_no 
 Join salaries on salaries.emp_no=dept_emp.emp_no
 where salaries.to_date like '%9999%'
-group by departments
-order by DESC;
+group by departments.dept_name
+order by AVG(salaries.salary) DESC;
 
 Question 7 
 Who is the highest paid employee in the Marketing department?
@@ -93,10 +95,12 @@ LIMIT 1;
 
 Question 9
 Determine the average salary for each department. Use all salary information and round your results.
+--CORRECT CORRECT 
 --Answer: salaries, departments, dept_emp INCORRECT NEEDS REVIEW
 use employees; 
-SELECT departments.dept_name, dept_emp.emp_no, salaries.salary, salaries.to_date
+SELECT departments.dept_name, AVG(salaries.salary)
 From departments join dept_emp on departments.dept_no=dept_emp.dept_no 
 Join salaries on salaries.emp_no=dept_emp.emp_no
+group by departments.dept_name;
 
 
