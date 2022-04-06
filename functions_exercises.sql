@@ -8,7 +8,7 @@ from employees
 Where last_name like ('E%') and last_name like ('%E'); 
 
 3.Convert the names produced in your last query to all uppercase.
---Answer: First name: RAMZI ERDE
+--Answer: First name: RAMZI ERDE, 704 rows
 Use employees;
 Select UPPER(CONCAT(first_name, '.', last_name)) as full_name
 from employees
@@ -22,21 +22,17 @@ Use datediff() function to find how many days they have
 --Answer: First name: Erie Mang 10390
 
 Use employees;
-Select (datediff(NOW(), hire_date)), last_name, first_name 
+Select (datediff(NOW(), hire_date)), AS 'days_with_company'
 From employees
 Where (hire_date like ('%199%')) And (birth_date like ('%12-25%'));
 
 Find the smallest and largest current salary from the salaries table.
---Answer: Smallest Salary:38623 Largest Salary: 158220
-Use employees;
-Select salary
-from salaries
-ORDER BY salary ASC;
+--Answer: Smallest Salary:38623 Largest Salary: 158220 REDOOOOOOOOOO
 
-Use employees;
-Select salary
-from salaries
-ORDER BY salary DESC;
+use employees; 
+SELECT MIN(salary), MAX(salary)
+From salaries
+where to_date > curdate();
 
 Use your knowledge of built in SQL functions to generate a username for all of the 
 employees. A username should be all lowercase, and consist of the first character 
