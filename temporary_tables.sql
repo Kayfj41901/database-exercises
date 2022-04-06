@@ -13,7 +13,7 @@ from employees_with_departments;
 -- Add a column named full_name to this table. It should be a VARCHAR whose length is the sum of the 
 -- lengths of the first name and last name columns. This number was calculated by looking back at the 
 -- employees database object information that had a limit of 14 for first name and 16 for last 
-ALTER TABLE jemison_1740.employees_with_departments ADD Full_name VARCHAR(30);
+ALTER TABLE jemison_1740.employees_with_departments ADD Full_name VARCHAR(31);
 -- Use update with department name and then the word SET to create a new column. 
 Update jemison_1740.employees_with_departments SET full_name = concat(first_name, ' ',last_name);
 
@@ -49,3 +49,32 @@ Alter table payment_with_sakila drop column amount;
 Alter table payment_with_sakila rename column amount_cents to amount;
 
 Find out how the current average pay in each department compares to the overall, historical average pay. In order to make the comparison easier, you should use the Z-score for salaries. In terms of salary, what is the best department right now to work for? The worst?
+-- Find out how the current average pay in each department compares to the overall, historical average pay. 
+-- In order to make the comparison easier, you should use the Z-score for salaries. 
+-- In terms of salary, what is the best department right now to work for? The worst?
+SET SQL_SAFE_UPDATES = 0;
+-- current average pay per department 
+use jemison_1740;
+CREATE TEMPORARY TABLE Salaries_with_Zscores1 AS 
+(Select employees.departments.dept_name, ROUND(AVG(employees.salaries.salary)) as AVG_CURRENT_SALARY
+From employees.salaries join employees.dept_emp on employees.salaries.emp_no=employees.dept_emp.emp_no 
+join employees.departments on employees.departments.dept_no=employees.dept_emp.dept_no
+Where employees.salaries.to_date like '%9999%'
+group by employees.departments.dept_name
+Order by employees.departments.dept_name);
+
+Alter table jemison_1740.Salaries_with_Zscores1 ADD Historical_AVG_SALARY FLOAT(10,2);
+Alter table jemison_1740.Salaries_with_Zscores1 ADD ZSCORE FLOAT(10,2);
+Alter table jemison_1740.Salaries_with_Zscores1 ADD STANDARD_DEV FLOAT(10,2);
+
+Update jemison_1740.Salaries_with_Zscores1 SET Historical_AVG_SALARY = 
+(Select ROUND(AVG(employees.salaries.salary)) 
+From employees.salaries
+);
+
+Update jemison_1740.Salaries_with_Zscores1 SET STANDARD_DEV = 16905;
+
+Update jemison_1740.Salaries_with_Zscores1 SET ZSCORE = (AVG_CURRENT_SALARY-Historical_AVG_SALARY)/ 16905;
+
+Select * 
+from Salaries_with_Zscores1;
